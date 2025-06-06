@@ -66,11 +66,7 @@ function ucfwp_get_media_background_picture_srcs( $attachment_xs_id, $attachment
  * @return string
  **/
 if ( ! function_exists( 'ucfwp_get_media_background_picture' ) ) {
-	function ucfwp_get_media_background_picture( $srcs, $image_alt ) {
-		// If no image alt text is provided, use a default value
-		if ( !$image_alt ) {
-			$image_alt = 'header background image';
-		}
+	function ucfwp_get_media_background_picture( $srcs, $image_alt = 'header background image' ) {
 		// NOTE: if a child theme overrides the `ucfwp_media_background_picture_object_position`
 		// hook, that theme must also provide a style override to
 		// `.media-background` to set the object-position property
