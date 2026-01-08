@@ -13,6 +13,9 @@ build/*
 *.xcworkspace
 xcuserdata
 
+# jetbrains project files
+.idea
+
 # svn & cvs
 .svn
 CVS
