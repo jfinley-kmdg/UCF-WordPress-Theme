@@ -245,29 +245,29 @@ if ( ! function_exists( 'ucfwp_get_template_part_slug' ) ) {
 
 if ( ! function_exists( 'ucfwp_get_page_by_title' ) ) {
     /**
-     * Returns a post object found as the results of a query by title. This is compatible with the WordPress function
-     * get_page_by_title(), which was depreciated in version 6.2, but will check both posts and pages, and only
-     * return published posts to avoid unintended access to private or draft posts.
+     * Returns a page found as the results of a query by title. This is compatible with the WordPress function
+     * get_page_by_title(), which was depreciated in version 6.2, but by default will only return published posts to avoid
+     * unintended access to private or draft posts.
      *
-     * To fully replicate the exact behavior of get_page_by_title() use ucfwp_get_post_by_title($title, "page", "all")
+     * To fully replicate the original behavior of get_page_by_title() use ucfwp_get_page_by_title($title, $output, "page", "all")
      *
      * @author Jake Finley & Peter Wilson
-     * @param string $title
-     * @param string[] $post_type
-     * @param string $status
-     * @return WP_Post|null The post with a matching title, or null if none is found.
+     * @param string $title Page title.
+     * @param string $output The required return type. One of OBJECT, ARRAY_A, or ARRAY_N, which correspond to a
+     *  WP_Post object, an associative array, or a numeric array, respectively.
+     * @param string|string[] $post_type Post type or array of post types.
+     * @param string|string[] $status Post status or array of post statuses that should be queried.
+     * @return WP_Post|array|null The post with a matching title, or null if none is found.
      * @since 0.11.2
      * @see https://make.wordpress.org/core/2023/03/06/get_page_by_title-deprecated/
      */
-    function ucfwp_get_post_by_title($title, $post_type = ['post', 'page'], $status = 'publish' ) {
-        $query = new WP_Query(
+    function ucfwp_get_page_by_title($title, $output = OBJECT, $post_type = 'page', $status = 'publish' ) {
+        $posts = get_posts(
             array(
                 'post_type'              => $post_type,
                 'title'                  => $title,
                 'post_status'            => $status,
-                'posts_per_page'         => 1,
-                'no_found_rows'          => true,
-                'ignore_sticky_posts'    => true,
+                'numberposts'            => 1,
                 'update_post_term_cache' => false,
                 'update_post_meta_cache' => false,
                 'orderby'                => 'date ID',
@@ -275,13 +275,24 @@ if ( ! function_exists( 'ucfwp_get_page_by_title' ) ) {
             )
         );
 
-        if ( ! empty( $query->post ) ) {
-            $page_got_by_title = $query->post;
+        // Get individual post object if it exists
+        if ( ! empty( $posts ) ) {
+            $post = $posts[0];
         } else {
-            $page_got_by_title = null;
+            $post = null;
         }
 
-        return $page_got_by_title;
+        if($post) {
+            // Convert to array formats as needed. For backwards compatibility with get_page_by_title()
+            if ( ARRAY_A === $output ) {
+                return $post->to_array();
+            } elseif ( ARRAY_N === $output ) {
+                return array_values( $post->to_array() );
+            }
+        }
+
+        // Returns WP_Post or null
+        return $post;
     }
 }
 
@@ -311,7 +322,7 @@ function ucfwp_get_queried_object() {
 	$obj = get_queried_object();
 
 	if ( !$obj && is_404() ) {
-        $page = ucfwp_get_post_by_title( '404',  'page' );
+        $page = ucfwp_get_page_by_title( '404' );
         if ( $page ) {
             $obj = $page;
         }

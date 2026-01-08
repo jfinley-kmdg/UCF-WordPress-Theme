@@ -201,9 +201,9 @@ function ucfwp_get_header_subtitle( $obj ) {
 		return wptexturize( $subtitle );
 	}
 
-    if(get_field( 'page_header_subtitle', $obj )) {
-        // get_field() can return null if a field hasn't been saved previously, throwing warnings in do_shortcode()
-        $subtitle = do_shortcode( get_field( 'page_header_subtitle', $obj ) );
+    if($subtitle_field = get_field( 'page_header_subtitle', $obj )) {
+        // get_field() can return null if a field hasn't been saved previously, throwing notices in do_shortcode()
+        $subtitle = do_shortcode( $subtitle_field );
     }
 
 	$subtitle = (string) apply_filters( 'ucfwp_get_header_subtitle_after', $subtitle, $obj );

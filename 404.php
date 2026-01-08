@@ -5,7 +5,7 @@
 <article id="page-not-found">
 	<div class="container mt-4 mt-sm-5 mb-5 pb-sm-4">
 		<?php
-        $page = ucfwp_get_post_by_title( '404', 'page');
+        $page = ucfwp_get_page_by_title( '404');
 		$content = '';
         if ( $page ) {
             $content = trim( apply_filters( 'the_content', $page->post_content ) );
