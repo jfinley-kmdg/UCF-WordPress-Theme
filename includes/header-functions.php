@@ -10,7 +10,8 @@
  * @author Jo Dickson
  * @since 0.0.0
  * @param mixed $obj A queried object (e.g. WP_Post, WP_Term), or null
- * @return array A set of Attachment IDs, one sized for use on -sm+ screens, and another for -xs
+ * @return array|false A set of Attachment IDs, one sized for use on -sm+ screens, and another for -xs, or false if no
+ *  image is set.
  **/
 function ucfwp_get_header_images( $obj ) {
 	$retval = array(
@@ -27,6 +28,7 @@ function ucfwp_get_header_images( $obj ) {
 	if ( $obj_header_image = get_field( 'page_header_image', $obj ) ) {
 		$retval['header_image'] = $obj_header_image;
 	}
+
 	if ( $obj_header_image_xs = get_field( 'page_header_image_xs', $obj ) ) {
 		$retval['header_image_xs'] = $obj_header_image_xs;
 	}
@@ -36,6 +38,7 @@ function ucfwp_get_header_images( $obj ) {
 	if ( isset( $retval['header_image'] ) && $retval['header_image'] ) {
 		return $retval;
 	}
+
 	return false;
 }
 
@@ -47,7 +50,8 @@ function ucfwp_get_header_images( $obj ) {
  * @author Jo Dickson
  * @since 0.0.0
  * @param mixed $obj A queried object (e.g. WP_Post, WP_Term), or null
- * @return array A set of Attachment urls corresponding to available video filetypes
+ * @return array|false A set of Attachment urls corresponding to available video filetypes, returns false if no mp4
+ *  format video is provided.
  **/
 function ucfwp_get_header_videos( $obj ) {
 	$retval = array(
@@ -65,6 +69,7 @@ function ucfwp_get_header_videos( $obj ) {
 	if ( $obj_header_video_mp4 = get_field( 'page_header_mp4', $obj ) ) {
 		$retval['mp4'] = $obj_header_video_mp4;
 	}
+
 	if ( $obj_header_video_webm = get_field( 'page_header_webm', $obj ) ) {
 		$retval['webm'] = $obj_header_video_webm;
 	}
@@ -76,6 +81,7 @@ function ucfwp_get_header_videos( $obj ) {
 	if ( isset( $retval['mp4'] ) && $retval['mp4'] ) {
 		return $retval;
 	}
+
 	return false;
 }
 
@@ -195,7 +201,10 @@ function ucfwp_get_header_subtitle( $obj ) {
 		return wptexturize( $subtitle );
 	}
 
-	$subtitle = do_shortcode( get_field( 'page_header_subtitle', $obj ) );
+    if ( $subtitle_field = get_field( 'page_header_subtitle', $obj ) ) {
+        // get_field() can return null if a field hasn't been saved previously, throwing notices in do_shortcode()
+        $subtitle = do_shortcode( $subtitle_field );
+    }
 
 	$subtitle = (string) apply_filters( 'ucfwp_get_header_subtitle_after', $subtitle, $obj );
 
