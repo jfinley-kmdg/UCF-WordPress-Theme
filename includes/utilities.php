@@ -261,7 +261,7 @@ if ( ! function_exists( 'ucfwp_get_page_by_title' ) ) {
      * @since 0.11.2
      * @see https://make.wordpress.org/core/2023/03/06/get_page_by_title-deprecated/
      */
-    function ucfwp_get_page_by_title($title, $output = OBJECT, $post_type = 'page', $status = 'publish' ) {
+    function ucfwp_get_page_by_title( $title, $output = OBJECT, $post_type = 'page', $status = 'publish' ) {
         $posts = get_posts(
             array(
                 'post_type'              => $post_type,
@@ -282,7 +282,7 @@ if ( ! function_exists( 'ucfwp_get_page_by_title' ) ) {
             $post = null;
         }
 
-        if($post) {
+        if( $post ) {
             // Convert to array formats as needed. For backwards compatibility with get_page_by_title()
             if ( ARRAY_A === $output ) {
                 return $post->to_array();
